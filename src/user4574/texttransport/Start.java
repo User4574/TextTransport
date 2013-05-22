@@ -41,6 +41,14 @@ public class Start extends Activity {
 		rg = (RadioGroup) findViewById(R.id.protocol);
 	}
 	
+	protected void onResume() {
+		super.onResume();
+		if (client == null || !client.isConnected()) {
+			ent.setEnabled(true);
+			ent.setText("");
+		}
+	}
+	
 	class ConnectListener implements OnClickListener {
 		public void onClick(View arg0) {
 			if (client != null && client.isConnected()) {
