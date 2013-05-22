@@ -8,5 +8,7 @@
     <string name="tcp">TCP</string>
     <string name="ssl">SSL</string>
     <string name="port">Port</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
 
 </resources>

@@ -1,6 +1,7 @@
 package user4574.texttransport;
 
 import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 import android.app.Activity;
@@ -17,6 +18,7 @@ import android.widget.RadioGroup;
 public class Start extends Activity {
 	
 	public static MqttClient client;
+	private MqttConnectOptions opts;
 	private SmsManager sms = SmsManager.getDefault();
 	
 	private Button conn;
@@ -24,6 +26,8 @@ public class Start extends Activity {
 	private EditText port;
 	private RadioGroup rg;
 	private String uri = "";
+	private EditText un;
+	private EditText pw;
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -39,6 +43,9 @@ public class Start extends Activity {
 		port = (EditText) findViewById(R.id.port);
 		
 		rg = (RadioGroup) findViewById(R.id.protocol);
+
+		un = (EditText) findViewById(R.id.username);
+		pw = (EditText) findViewById(R.id.password);
 	}
 	
 	protected void onResume() {
@@ -67,7 +74,14 @@ public class Start extends Activity {
 				try {
 					client = new MqttClient(server, MqttClient.generateClientId(), new AndroidPersistence());
 					client.setCallback(new MqttMsgCallback(sms));
-					client.connect();
+					if (!un.getText().toString().equals("")) {
+						opts = new MqttConnectOptions();
+						opts.setUserName(un.getText().toString());
+						String pass = pw.getText().toString();
+						if (!pass.equals("")) opts.setPassword(pass.toCharArray());
+						client.connect(opts);
+					} else
+						client.connect();
 					client.subscribe("/texttransport/+/send");
 					ent.setEnabled(false);
 					conn.setText(R.string.disconnect);
