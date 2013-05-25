@@ -1,5 +1,7 @@
 package user4574.texttransport;
 
+import java.util.ArrayList;
+
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -21,6 +23,8 @@ public class Start extends Activity {
 	private MqttConnectOptions opts;
 	private SmsManager sms = SmsManager.getDefault();
 	
+	private ArrayList<View> inputs;
+	
 	private Button conn;
 	private EditText ent;
 	private EditText port;
@@ -32,6 +36,8 @@ public class Start extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.start);
+		
+		inputs = new ArrayList<View>();
 		
 		conn = (Button) findViewById(R.id.connectbutton);
 		conn.setEnabled(false);
@@ -46,12 +52,24 @@ public class Start extends Activity {
 
 		un = (EditText) findViewById(R.id.username);
 		pw = (EditText) findViewById(R.id.password);
+		
+		inputs.add(findViewById(R.id.uri));
+		inputs.add(findViewById(R.id.port));
+		inputs.add(findViewById(R.id.tcp));
+		inputs.add(findViewById(R.id.ssl));
+		inputs.add(findViewById(R.id.username));
+		inputs.add(findViewById(R.id.password));
+	}
+	
+	private void setInputsEnabled(boolean enabled) {
+		for (View v : inputs)
+			v.setEnabled(enabled);
 	}
 	
 	protected void onResume() {
 		super.onResume();
 		if (client == null || !client.isConnected()) {
-			ent.setEnabled(true);
+			setInputsEnabled(true);
 			ent.setText("");
 		}
 	}
@@ -61,7 +79,7 @@ public class Start extends Activity {
 			if (client != null && client.isConnected()) {
 				try {
 					client.disconnect();
-					ent.setEnabled(true);
+					setInputsEnabled(true);
 					conn.setText(R.string.connect);
 				} catch (MqttException e) {
 					e.printStackTrace();
@@ -83,7 +101,7 @@ public class Start extends Activity {
 					} else
 						client.connect();
 					client.subscribe("/texttransport/+/send");
-					ent.setEnabled(false);
+					setInputsEnabled(false);
 					conn.setText(R.string.disconnect);
 				} catch (MqttException e) {
 					e.printStackTrace();
